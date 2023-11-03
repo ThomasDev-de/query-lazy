@@ -10,6 +10,7 @@ Set the attribute data-src to an image so that the plugin knows which image shou
 ```
 **Load the lazy loader at the end of the body tag**
 ```html
+    <script src="/vendor/components/jquery/jquery.min.js"></script>
     <script src="/dist/jquery-lazy.min.js"></script>
 </body>
 ```
