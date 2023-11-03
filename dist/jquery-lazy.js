@@ -18,7 +18,7 @@
 
         const settings = $.extend({}, DEFAULTS, options || {});
 
-        const imageObserver = new IntersectionObserver(function (entries) {
+        const imageObserver = new IntersectionObserver(function (entries, observer) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     let element = entry.target;
