@@ -36,6 +36,8 @@
 <body data-src="https://cdn.pixabay.com/photo/2017/01/16/19/54/sunset-1985086_960_720.jpg">
 <div class="container py-5">
     <h1 class="text-center mb-5">jQuery lazy</h1>
+    <img alt="" data-src="https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?w=1380&t=st=1699050147~exp=1699050747~hmac=59179d9e1eb6a107d4111f3a8b52cd912c884709f73145c7c8457518487f946e" src=""/>
+<!--    <img alt="" data-src="https://image-1.uhdpaper.com/wallpaper/spiderman-venom-symbiote-suit-marvels-spider-man-2-4k-wallpaper-uhdpaper.com-467@1@m.jpg" src=""/>-->
     <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/22/23/12/beach-1851101_960_720.jpg" src=""/>
     <img alt="" data-src="https://cdn.pixabay.com/photo/2017/12/15/13/51/polynesia-3021072_960_720.jpg" src=""/>
     <img alt="" data-src="https://cdn.pixabay.com/photo/2016/04/18/22/05/seashells-1337565_960_720.jpg" src=""/>
@@ -61,6 +63,9 @@
             },
             onLoad(element) {
                 $(element).addClass('rounded my-shadow').fadeIn('slow')
+            },
+            onError(element) {
+                // $(element).replaceWith('<div>error</div>')
             },
             onCompleted() {
             }
