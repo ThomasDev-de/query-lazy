@@ -9,6 +9,7 @@
         img {
             /*opacity: 0;*/
         }
+
         img {
             background: #F1F1FA;
             width: 400px;
@@ -17,40 +18,51 @@
             margin: 20px auto;
             border: 0;
         }
-        body{
+
+        body {
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
+        }
+
+        .my-shadow {
+            box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset;
+        }
+        [data-url] {
+            min-height: 600px;
         }
     </style>
 </head>
 <body data-src="https://cdn.pixabay.com/photo/2017/01/16/19/54/sunset-1985086_960_720.jpg">
 <div class="container py-5">
     <h1 class="text-center mb-5">jQuery lazy</h1>
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/22/23/12/beach-1851101_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/12/15/13/51/polynesia-3021072_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/04/18/22/05/seashells-1337565_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2018/10/05/14/39/sunset-3726030_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2014/07/16/05/18/beach-394503_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/02/22/17/02/beach-2089936_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/30/15/00/lighthouse-1872998_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/23/17/25/woman-1853939_960_720.jpg" />
-    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/12/20/10/48/portugal-3029665_960_720.jpg" />
-</div>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/22/23/12/beach-1851101_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/12/15/13/51/polynesia-3021072_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/04/18/22/05/seashells-1337565_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2018/10/05/14/39/sunset-3726030_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2014/07/16/05/18/beach-394503_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/02/22/17/02/beach-2089936_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/30/15/00/lighthouse-1872998_960_720.jpg"/>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2016/11/23/17/25/woman-1853939_960_720.jpg"/>
 
+    <div data-url="content.html"></div>
+    <img alt="" data-src="https://cdn.pixabay.com/photo/2017/12/20/10/48/portugal-3029665_960_720.jpg"/>
+</div>
 
 
 <script src="/vendor/components/jquery/jquery.min.js"></script>
 <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/dist/jquery-lazy.min.js"></script>
 <script>
-    (function($){
-        $('[data-src]').lazy({
-            beforeLoad(element){
+    (function ($) {
+        $('[data-src],[data-url]').lazy({
+            onBeforeLoad(element) {
                 $(element).hide();
             },
-            afterLoad(element) {
-                $(element).addClass('rounded shadow').fadeIn('slow')
+            onLoad(element) {
+                $(element).addClass('rounded my-shadow').fadeIn('slow')
+            },
+            onCompleted() {
             }
         });
     }(jQuery));

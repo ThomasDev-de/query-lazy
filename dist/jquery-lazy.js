@@ -2,26 +2,69 @@
 
 (function ($) {
     $.fn.lazy = function (options) {
-        const elements = $(this);
-        const countElements = elements.length;
-        let finished = 0;
+        let elements = $(this);
         const DEFAULTS = {
-            beforeLoad(element) {},
-            afterLoad(element) {},
-            onError(element){},
-            onFinishedAll(){}
+            onBeforeLoad(element) {
+            },
+            onLoad(element) {
+            },
+            onError(element) {
+            },
+            onCompleted(element) {
+            }
         };
+
+        let unobserve = 0;
 
         const settings = $.extend({}, DEFAULTS, options || {});
 
-        function show(element) {
-            settings.beforeLoad(element);
+        const imageObserver = new IntersectionObserver(function (entries, observer) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    let element = entry.target;
+                    resolve(element);
+                    imageObserver.unobserve(element);
+
+
+                }
+            });
+        });
+
+        elements.each(function (i, image) {
+            imageObserver.observe(image);
+        });
+
+        function checkFinished(){
+            const done = elements.length === unobserve;
+            if(done){
+                settings.onCompleted();
+            }
+        }
+
+        function resolve(element) {
+            settings.onBeforeLoad(element);
+            const ajaxLoad = element.hasAttribute("data-url");
             switch (true) {
+                case ajaxLoad: {
+                    $(element).load(element.dataset.url, {}, function () {
+                        $(element).removeAttr('data-url');
+                        settings.onLoad(element);
+                        $(element).find('[data-src],[data-url]').each(function (i, e) {
+                            imageObserver.observe(e);
+                            elements = elements.add($(e));
+                        });
+                        unobserve++;
+                        checkFinished();
+                    });
+                    break;
+                }
                 case $(element).is('img'): {
                     element.src = element.dataset.src;
                     element.onload = function () {
                         $(element).removeAttr('data-src');
-                        settings.afterLoad(this);
+                        settings.onLoad(this);
+                        unobserve++;
+                        checkFinished();
                     }
                     element.onerror = settings.onError(element);
                     break;
@@ -30,62 +73,15 @@
                     const tmpImage = new Image();
                     tmpImage.src = element.dataset.src;
                     tmpImage.onerror = settings.onError(element);
-                    tmpImage.onload = function(){
+                    tmpImage.onload = function () {
                         element.style.backgroundImage = `url(${this.src})`;
                         $(element).removeAttr('data-src');
-                        settings.afterLoad(element);
+                        settings.onLoad(element);
+                        unobserve++;
+                        checkFinished();
                     }
                 }
             }
-
-            finished++;
-            if(finished === countElements){
-                settings.onFinishedAll();
-            }
         }
-
-        if ("IntersectionObserver" in window) {
-            let imageObserver = new IntersectionObserver(function (entries, observer) {
-                entries.forEach(function (entry) {
-                    if (entry.isIntersecting) {
-                        let element = entry.target;
-                        show(element);
-                        imageObserver.unobserve(element);
-                    }
-                });
-            });
-
-            elements.each(function (i, image) {
-                imageObserver.observe(image);
-            });
-        } else {
-            let lazyLoadThrottleTimeout;
-
-            function lazyLoad() {
-                if (lazyLoadThrottleTimeout) {
-                    clearTimeout(lazyLoadThrottleTimeout);
-                }
-
-                lazyLoadThrottleTimeout = setTimeout(function () {
-                    const scrollTop = window.scrollY;
-                    elements.each(function (i, img) {
-                        if (img.offsetTop < (window.innerHeight + scrollTop)) {
-                            show(img);
-                        }
-                    });
-                    if (elements.length === 0) {
-                        document.removeEventListener("scroll", lazyLoad);
-                        window.removeEventListener("resize", lazyLoad);
-                        window.removeEventListener("orientationChange", lazyLoad);
-                    }
-                }, 20);
-            }
-
-            document.addEventListener("scroll", lazyLoad);
-            window.addEventListener("resize", lazyLoad);
-            window.addEventListener("orientationChange", lazyLoad);
-        }
-
-
     };
 }(jQuery));
