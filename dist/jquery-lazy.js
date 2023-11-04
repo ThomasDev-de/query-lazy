@@ -43,13 +43,13 @@
 
         function resolve(element) {
             settings.onBeforeLoad(element);
-            const ajaxLoad = element.hasAttribute("data-url");
+            const ajaxLoad = element.hasAttribute("data-lazy-url");
             switch (true) {
                 case ajaxLoad: {
-                    $(element).load(element.dataset.url, {}, function () {
-                        $(element).removeAttr('data-url');
+                    $(element).load(element.dataset.lazyUrl, {}, function () {
+                        $(element).removeAttr('data-lazy-url');
                         settings.onLoad(element);
-                        $(element).find('[data-src],[data-url]').each(function (i, e) {
+                        $(element).find('[data-lazy-src],[data-lazy-url]').each(function (i, e) {
                             imageObserver.observe(e);
                             elements = elements.add($(e));
                         });
@@ -59,9 +59,9 @@
                     break;
                 }
                 case $(element).is('img'): {
-                    element.src = element.dataset.src;
+                    element.src = element.dataset.lazySrc;
                     element.onload = function () {
-                        $(element).removeAttr('data-src');
+                        $(element).removeAttr('data-lazy-src');
                         settings.onLoad(this);
                         unobserve++;
                         checkFinished();
@@ -71,11 +71,11 @@
                 }
                 default: {
                     const tmpImage = new Image();
-                    tmpImage.src = element.dataset.src;
+                    tmpImage.src = element.dataset.lazySrc;
                     tmpImage.onerror = settings.onError(element);
                     tmpImage.onload = function () {
                         element.style.backgroundImage = `url(${this.src})`;
-                        $(element).removeAttr('data-src');
+                        $(element).removeAttr('data-lazy-src');
                         settings.onLoad(element);
                         unobserve++;
                         checkFinished();
