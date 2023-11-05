@@ -43,18 +43,26 @@
 
         function resolve(element) {
             settings.onBeforeLoad(element);
-            const ajaxLoad = element.hasAttribute("data-lazy-url");
             switch (true) {
-                case ajaxLoad: {
-                    $(element).load(element.dataset.lazyUrl, {}, function () {
-                        $(element).removeAttr('data-lazy-url');
-                        settings.onLoad(element);
-                        $(element).find('[data-lazy-src],[data-lazy-url]').each(function (i, e) {
-                            imageObserver.observe(e);
-                            elements = elements.add($(e));
-                        });
-                        unobserve++;
-                        checkFinished();
+                case element.hasAttribute("data-lazy-url"): {
+                    $.ajax({
+                        async:false,
+                        dataType:'html',
+                        url: element.dataset.lazyUrl,
+                        success: function(result){
+                            settings.onLoad(element);
+                            $(element).removeAttr('data-lazy-url');
+                            $(element).html(result);
+                            $(element).find('[data-lazy-src],[data-lazy-url]').each(function (i, e) {
+                                imageObserver.observe(e);
+                                elements = elements.add($(e));
+                            });
+                            unobserve++;
+                            checkFinished();
+                        },
+                        error: function(){
+                            settings.onError(element);
+                        }
                     });
                     break;
                 }
