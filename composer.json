@@ -1,6 +1,6 @@
 {
   "name": "webcito/query-lazy",
-  "description": "description",
+  "description": "A simple jQuery plugin to load elements only when they are needed during scrolling.",
   "minimum-stability": "stable",
   "license": "proprietary",
   "authors": [
