@@ -6,38 +6,40 @@
     <title>jQuery - Lazy</title>
     <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        img {
-            /*opacity: 0;*/
+        .lazy-waiting {
+            display: block;
+            visibility: hidden;
+            min-height: 300px;
         }
 
-        img {
-            background: #F1F1FA;
-            width: 400px;
-            height: 300px;
+        :not(body).lazy-done {
+            display: block;
+            animation: fadeIn 2s;
+            visibility: visible;
+            box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px, rgba(6, 24, 44, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;
+            border-radius: 20px !important;
+        }
+
+        img.lazy-done {
+            max-width: 600px;
+            max-height: 400px;
             display: block;
             margin: 20px auto;
-            border: 0;
         }
 
-        body {
+        body.lazy-done {
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
-        }
-
-        .my-shadow {
-            box-shadow: rgba(6, 24, 44, 0.4) 0 0 0 2px, rgba(6, 24, 44, 0.65) 0 4px 6px -1px, rgba(255, 255, 255, 0.08) 0 1px 0 inset;
-        }
-        [data-lazy-url] {
-            min-height: 600px;
         }
     </style>
 </head>
 <body data-lazy-src="https://cdn.pixabay.com/photo/2017/01/16/19/54/sunset-1985086_960_720.jpg">
 <div class="container py-5">
     <h1 class="text-center mb-5">jQuery lazy</h1>
-    <img alt="" data-lazy-src="https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?w=1380&t=st=1699050147~exp=1699050747~hmac=59179d9e1eb6a107d4111f3a8b52cd912c884709f73145c7c8457518487f946e" src=""/>
-<!--    <img alt="" data-lazy-src="https://image-1.uhdpaper.com/wallpaper/spiderman-venom-symbiote-suit-marvels-spider-man-2-4k-wallpaper-uhdpaper.com-467@1@m.jpg" src=""/>-->
+    <img alt=""
+         data-lazy-src="https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg?w=1380&t=st=1699050147~exp=1699050747~hmac=59179d9e1eb6a107d4111f3a8b52cd912c884709f73145c7c8457518487f946e"
+         src=""/>
     <img alt="" data-lazy-src="https://cdn.pixabay.com/photo/2016/11/22/23/12/beach-1851101_960_720.jpg" src=""/>
     <img alt="" data-lazy-src="https://cdn.pixabay.com/photo/2017/12/15/13/51/polynesia-3021072_960_720.jpg" src=""/>
     <img alt="" data-lazy-src="https://cdn.pixabay.com/photo/2016/04/18/22/05/seashells-1337565_960_720.jpg" src=""/>
@@ -58,17 +60,13 @@
 <script>
     (function ($) {
         $('[data-lazy-src],[data-lazy-url]').lazy({
-            onBeforeLoad(element) {
-                $(element).hide();
-            },
-            onLoad(element) {
-                $(element).addClass('rounded my-shadow').fadeIn('slow')
-            },
-            onError(element) {
-                // $(element).replaceWith('<div>error</div>')
-            },
-            onCompleted() {
-            }
+            classWaiting: 'lazy-waiting',
+            classLoading: 'lazy-loading',
+            classDone: 'lazy-done',
+            onBeforeLoad(element) {},
+            onLoad(element, w, h, y, x) {},
+            onError(element) {},
+            onCompleted() {}
         });
     }(jQuery));
 </script>

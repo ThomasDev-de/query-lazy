@@ -1,9 +1,34 @@
 // noinspection DuplicatedCode
 
 (function ($) {
+    $.fn.getSize = function () {
+        const $wrap = $("<div />").appendTo($("body"));
+        $wrap.css({
+            "position": "absolute !important",
+            "visibility": "hidden !important",
+            "display": "block !important"
+        });
+
+        const $clone = $(this).clone().appendTo($wrap);
+
+        const sizes = {
+            "width": $clone.width(),
+            "height": $clone.height()
+        };
+
+        $wrap.remove();
+
+        return sizes;
+    };
+
     $.fn.lazy = function (options) {
-        let elements = $(this);
+        const elem = $(this);
+        let elements = [];
+        const validAttributes = ['data-lazy-src', 'data-lazy-url'];
         const DEFAULTS = {
+            classWaiting: 'lazy-waiting',
+            classLoading: 'lazy-loading',
+            classDone: 'lazy-done',
             onBeforeLoad(element) {
             },
             onLoad(element) {
@@ -22,21 +47,22 @@
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     let element = entry.target;
+                    $(element).removeClass(settings.classWaiting).addClass(settings.classLoading);
                     resolve(element);
                     imageObserver.unobserve(element);
-
-
                 }
             });
         });
 
-        elements.each(function (i, image) {
-            imageObserver.observe(image);
+        elem.each(function (i, e) {
+            if (e.hasAttribute(validAttributes[0]) || e.hasAttribute(validAttributes[1])) {
+                elements.push($(e).addClass(settings.classWaiting));
+                imageObserver.observe(e);
+            }
         });
 
-        function checkFinished(){
-            const done = elements.length === unobserve;
-            if(done){
+        function checkFinished() {
+            if (elements.length === unobserve) {
                 settings.onCompleted();
             }
         }
@@ -44,37 +70,48 @@
         function resolve(element) {
             settings.onBeforeLoad(element);
             switch (true) {
-                case element.hasAttribute("data-lazy-url"): {
+                case element.hasAttribute(validAttributes[1]): {
                     $.ajax({
-                        async:false,
-                        dataType:'html',
+                        dataType: 'html',
                         url: element.dataset.lazyUrl,
-                        success: function(result){
-                            settings.onLoad(element);
-                            $(element).removeAttr('data-lazy-url');
+                        success: function (result) {
+                            const $el = $(element);
                             $(element).html(result);
-                            $(element).find('[data-lazy-src],[data-lazy-url]').each(function (i, e) {
+                            const sizes = $(element).getSize();
+                            settings.onLoad(element, sizes.width, sizes.height, window.scrollY, window.scrollX);
+                            $(element)
+                                .removeAttr('data-lazy-url')
+                                .removeClass(settings.classLoading)
+                                .addClass(settings.classDone);
+
+                            $(element).find('[' + validAttributes.join('],[') + ']').each(function (i, e) {
+                                $(e).addClass(settings.classWaiting)
                                 imageObserver.observe(e);
-                                elements = elements.add($(e));
+                                elements.push($(e));
                             });
                             unobserve++;
                             checkFinished();
                         },
-                        error: function(){
+                        error: function () {
                             settings.onError(element);
                         }
                     });
                     break;
                 }
                 case $(element).is('img'): {
-                    element.src = element.dataset.lazySrc;
-                    element.onload = function () {
-                        $(element).removeAttr('data-lazy-src');
-                        settings.onLoad(this);
+                    const img = new Image();
+                    img.onload = function () {
+                        const height = img.height;
+                        const width = img.width;
+                        element.src = img.src;
+
+                        $(element).removeAttr(validAttributes[0]).removeClass(settings.classLoading).addClass(settings.classDone);
+                        settings.onLoad(element,width, height, window.scrollY, window.scrollX);
                         unobserve++;
                         checkFinished();
                     }
-                    element.onerror = settings.onError(element);
+                    img.src = element.dataset.lazySrc;
+                    img.onerror = settings.onError(element);
                     break;
                 }
                 default: {
@@ -82,9 +119,11 @@
                     tmpImage.src = element.dataset.lazySrc;
                     tmpImage.onerror = settings.onError(element);
                     tmpImage.onload = function () {
+                        const height = tmpImage.height;
+                        const width = tmpImage.width;
                         element.style.backgroundImage = `url(${this.src})`;
-                        $(element).removeAttr('data-lazy-src');
-                        settings.onLoad(element);
+                        $(element).removeAttr(validAttributes[0]).removeClass(settings.classLoading).addClass(settings.classDone);
+                        settings.onLoad(element,height, width, height, window.scrollY, window.scrollX);
                         unobserve++;
                         checkFinished();
                     }
