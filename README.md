@@ -41,7 +41,7 @@ body.lazy-done {
 ## Installation
 
 1. Download the plugin [uncompressed](./dist/jquery-lazy.js), [minified](./dist/jquery-lazy.min.js)
-2. Load the plugin via composer
+2. Or load the plugin via composer
 
 ```shell
 composer require webcito/query-lazy:dev-main
