@@ -1,4 +1,4 @@
-// noinspection DuplicatedCode
+// noinspection DuplicatedCode,JSUnusedLocalSymbols,JSMissingSwitchBranches,JSUnusedGlobalSymbols
 
 (function ($) {
     $.fn.getSize = function () {
@@ -17,14 +17,22 @@
         };
 
         $wrap.remove();
-
         return sizes;
     };
 
-    $.fn.lazy = function (options) {
+    /**
+     *
+     * @param {object|undefined} options
+     * @return {*|jQuery|HTMLElement}
+     */
+    $.fn.lazy = function (options = {}) {
         const elem = $(this);
         let elements = [];
         const validAttributes = ['data-lazy-src', 'data-lazy-url'];
+        /**
+         * the default options
+         * @type {{onError(*), classLoading: string, onBeforeLoad(*), classStatic: string, onCompleted(*), onLoad(*), classWaiting: string, recursive: boolean, classDone: string}}
+         */
         const DEFAULTS = {
             recursive: true,
             classStatic: 'lazy',
@@ -43,6 +51,9 @@
 
         let unobserve = 0;
 
+        /**
+         * merge default with user options
+         */
         const settings = $.extend({}, DEFAULTS, options || {});
 
         const imageObserver = new IntersectionObserver(function (entries, observer) {
@@ -57,22 +68,38 @@
         });
 
         elem.each(function (i, e) {
+            /**
+             * register only valid attributes
+             */
             if (e.hasAttribute(validAttributes[0]) || e.hasAttribute(validAttributes[1])) {
                 elements.push($(e).addClass(settings.classWaiting +' '+settings.classStatic));
                 imageObserver.observe(e);
             }
         });
 
+        /**
+         * check if all elements loaded
+         */
         function checkFinished() {
             if (elements.length === unobserve) {
                 settings.onCompleted();
             }
         }
 
-        function trigger(name, el, params = []){
-            $(el).trigger(`${name}.lazy`, params);
+        /**
+         *
+         * @param {string} name
+         * @param {HTMLElement} element
+         * @param {array} params
+         */
+        function trigger(name, element, params = []){
+            $(element).trigger(`${name}.lazy`, params);
         }
 
+        /**
+         *
+         * @param {HTMLElement} element
+         */
         function resolve(element) {
             trigger('beforeLoad', element);
             settings.onBeforeLoad(element);
@@ -101,12 +128,13 @@
                                     elements.push($(e));
                                 });
                             }
-
-                            unobserve++;
-                            checkFinished();
                         },
                         error: function () {
                             settings.onError(element);
+                        },
+                        complete(){
+                            unobserve++;
+                            checkFinished();
                         }
                     });
                     break;
@@ -119,7 +147,6 @@
                         element.src = img.src;
                         trigger('loaded', element, [width, height, window.scrollY, window.scrollX]);
                         $(element).removeAttr(validAttributes[0]).removeClass(settings.classLoading).addClass(settings.classDone);
-
                         settings.onLoad(element, width, height, window.scrollY, window.scrollX);
                         unobserve++;
                         checkFinished();
@@ -146,5 +173,7 @@
                 }
             }
         }
+
+        return elem;
     };
 }(jQuery));

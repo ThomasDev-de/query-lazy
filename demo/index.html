@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>jQuery - Lazy</title>
     <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--suppress CssUnusedSymbol -->
     <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
         .lazy-waiting {
             display: block;
             visibility: hidden;
@@ -21,7 +27,7 @@
         }
 
         img.lazy-done {
-            max-width: 600px;
+            max-width: 100%;
             max-height: 400px;
             display: block;
             margin: 20px auto;
@@ -76,7 +82,7 @@
         });
 
         $('body')
-            .on('beforeLoad.lazy', '.lazy', function (e) {
+            .on('beforeLoad.lazy', '.lazy', function () {
                 console.log('beforeLoad.lazy');
             })
             .on('loaded.lazy', '.lazy', function (e, width, height, scrollY, scrollX) {
