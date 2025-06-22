@@ -1,4 +1,4 @@
-# query-lazy
+# jQuery-lazy
 
 ![header](./demo/img/jquery-lazy.png)
 
